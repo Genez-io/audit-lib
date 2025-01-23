@@ -34,7 +34,8 @@ func NewAuditServiceWithDB(db *gorm.DB) *auditService {
 
 func GetAuditService() *auditService {
 	if auditServiceInstance == nil {
-		panic("audit service not initialized")
+		fmt.Println("auditServiceInstance is nil, all calls to audit service will silently fail")
+		return nil
 	}
 
 	return auditServiceInstance

@@ -69,6 +69,10 @@ func (p *ProjectLevelAudit) ToString() string {
 
 // SubmitAuditDetail implements ResourceAudit.
 func (p *ProjectLevelAudit) SubmitAuditDetail(message string) error {
+	if p.auditService == nil {
+		fmt.Println("auditService is nil, silent fail")
+		return nil
+	}
 	if p.parentAuditLogId == "" {
 		return fmt.Errorf("parentAuditLogId is not set")
 	}
@@ -85,6 +89,10 @@ func (p *ProjectLevelAudit) SubmitAuditDetail(message string) error {
 // Calling this function will automatically set the parentAuditLogId field.
 // parentAuditLogId is used to log audit details to a parent audit log.
 func (p *ProjectLevelAudit) SubmitAuditLog(action auditmodels.Action) error {
+	if p.auditService == nil {
+		fmt.Println("auditService is nil, silent fail")
+		return nil
+	}
 	var logId uuid.UUID
 	var err error
 	// Check that the action is valid.
