@@ -10,7 +10,7 @@ type AccountLevelResource string
 const (
 	Projects      AccountLevelResource = "projects"
 	Databases     AccountLevelResource = "databases"
-	Billing       AccountLevelResource = "billing"
+	Billing       AccountLevelResource = "billings"
 	Users         AccountLevelResource = "users"
 	AccessTokens  AccountLevelResource = "access_tokens"
 	Collaboration AccountLevelResource = "collaborations"
@@ -18,7 +18,7 @@ const (
 
 func (AccountLevelResource) Check(s string) error {
 	switch s {
-	case "projects", "databases", "billing", "users", "access_tokens", "collaborations":
+	case "projects", "databases", "billings", "users", "access_tokens", "collaborations":
 		return nil
 	default:
 		return fmt.Errorf("invalid AccountLevelResource: %s", s)
@@ -31,15 +31,15 @@ const (
 	Deployments           ProjectLevelResource = "deployments"
 	CodeUpdates           ProjectLevelResource = "code_updates"
 	Collaborators         ProjectLevelResource = "collaborators"
-	Environments          ProjectLevelResource = "environments"
+	Envs                  ProjectLevelResource = "envs"
 	DatabaseAssignments   ProjectLevelResource = "databases"
 	ClassPauses           ProjectLevelResource = "class_pauses"
 	CustomDomains         ProjectLevelResource = "custom_domains"
 	Integrations          ProjectLevelResource = "integrations"
-	Authentication        ProjectLevelResource = "authentication"
+	Authentication        ProjectLevelResource = "authentications"
 	AuthenticationMethods ProjectLevelResource = "authentication_methods"
-	AuthenticationMail    ProjectLevelResource = "authentication_mail"
-	EmailService          ProjectLevelResource = "email_service"
+	AuthenticationMail    ProjectLevelResource = "authentication_mails"
+	EmailService          ProjectLevelResource = "email_services"
 	LogDrains             ProjectLevelResource = "log_drains"
 )
 
@@ -49,14 +49,14 @@ func (ProjectLevelResource) Check(s string) error {
 		"deployments",
 		"code_updates",
 		"collaborators",
-		"environments",
+		"envs",
 		"databases",
 		"class_pauses",
 		"custom_domains",
 		"integrations",
-		"authentication",
+		"authentications",
 		"authentication_methods",
-		"authentication_mail",
+		"authentication_mails",
 		"email_service",
 		"log_drains":
 		return nil
@@ -74,6 +74,8 @@ const (
 	ActionDelete  Action = "delete"
 	ActionEnable  Action = "enable"
 	ActionDisable Action = "disable"
+  ActionLogin   Action = "login"
+  ActionLogout  Action = "logout"
 )
 
 type AuditFilter struct {

@@ -24,18 +24,17 @@ func TestAuditRepository_PutGenericAccountAuditLog(t *testing.T) {
 	audit.NewAuditServiceWithDB(db)
 	userId := uuid.New().String()
 	resourceId := uuid.New().String()
-	pa := audit.NewGenericAccountAudit(auditmodels.Users, userId, resourceId, "test-generic-al", nil)
-	logId, err := pa.SubmitAuditLog(auditmodels.ActionCreate)
+	pa := audit.NewAccountLevelAudit(auditmodels.Users, userId, resourceId, "test-generic-al", nil)
+	err = pa.SubmitAuditLog(auditmodels.ActionCreate)
 	if err != nil {
 		t.Error(err)
 	}
 
-	logDetailId, err := pa.SubmitAuditDetail(logId, "test message")
+	err = pa.SubmitAuditDetail("test message")
 	if err != nil {
 		t.Error(err)
 	}
 
-	fmt.Println(logId, logDetailId)
 }
 
 func TestAuditRepository_PutGenericProjectAuditLog(t *testing.T) {
@@ -53,16 +52,15 @@ func TestAuditRepository_PutGenericProjectAuditLog(t *testing.T) {
 	userId := uuid.New().String()
 	projectId := uuid.New().String()
 	resourceId := uuid.New().String()
-	pa := audit.NewGenericProjectAudit(auditmodels.Deployments, userId, projectId, resourceId, "test-generic-pl", nil)
-	logId, err := pa.SubmitAuditLog(auditmodels.ActionCreate)
+	pa := audit.NewProjectLevelAudit(auditmodels.Deployments, userId, projectId, resourceId, "test-generic-pl", nil)
+	err = pa.SubmitAuditLog(auditmodels.ActionCreate)
 	if err != nil {
 		t.Error(err)
 	}
 
-	logDetailId, err := pa.SubmitAuditDetail(logId, "test message")
+	err = pa.SubmitAuditDetail("test message")
 	if err != nil {
 		t.Error(err)
 	}
-
-	fmt.Println(logId, logDetailId)
+	fmt.Println(pa.ToString())
 }

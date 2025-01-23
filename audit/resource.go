@@ -11,6 +11,9 @@ type BaseProjectLevelAudit struct {
 	resourceId   string
 	projectId    string
 	ownerId      *string
+	// Note this should be populated when calling SubmitAuditLog.
+	parentAuditLogId string
+	actionTaken 		auditmodels.Action
 }
 
 type BaseAccountLevelAudit struct {
@@ -19,9 +22,13 @@ type BaseAccountLevelAudit struct {
 	userId       string
 	resourceId   string
 	ownerId      *string
+	// Note this should be populated when calling SubmitAuditLog.
+	parentAuditLogId string
+	actionTaken 		auditmodels.Action
 }
 
 type ResourceAudit interface {
-	SubmitAuditLog(action auditmodels.Action) (string, error)
-	SubmitAuditDetail(parentId string, message string) (string, error)
+	SubmitAuditLog(action auditmodels.Action) error
+	SubmitAuditDetail(message string) error
+	ToString() string
 }
