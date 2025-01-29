@@ -32,8 +32,9 @@ const (
 	CodeUpdates           ProjectLevelResource = "code_updates"
 	Collaborators         ProjectLevelResource = "collaborators"
 	Envs                  ProjectLevelResource = "envs"
-	DatabaseAssignments   ProjectLevelResource = "databases"
+	DatabaseAssignments   ProjectLevelResource = "database_links"
 	ClassPauses           ProjectLevelResource = "class_pauses"
+	FunctionPauses        ProjectLevelResource = "function_pauses"
 	CustomDomains         ProjectLevelResource = "custom_domains"
 	Integrations          ProjectLevelResource = "integrations"
 	Authentication        ProjectLevelResource = "authentications"
@@ -50,8 +51,9 @@ func (ProjectLevelResource) Check(s string) error {
 		"code_updates",
 		"collaborators",
 		"envs",
-		"databases",
+		"database_links",
 		"class_pauses",
+		"function_pauses",
 		"custom_domains",
 		"integrations",
 		"authentications",
@@ -74,8 +76,8 @@ const (
 	ActionDelete  Action = "delete"
 	ActionEnable  Action = "enable"
 	ActionDisable Action = "disable"
-  ActionLogin   Action = "login"
-  ActionLogout  Action = "logout"
+	ActionLogin   Action = "login"
+	ActionLogout  Action = "logout"
 )
 
 type AuditFilter struct {

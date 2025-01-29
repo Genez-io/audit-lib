@@ -39,38 +39,65 @@ type ResourceAudit interface {
 func AuditLogToString(resourceType, resourceName, action string) string {
 	var message string
 
-	singularResource := resourceType[:len(resourceType)-1]
-	singularCamelCaseResource := strings.ToUpper(string(resourceType[:1])) + string(resourceType[1:len(resourceType)-1])
+	resourceTypeParsed := strings.ReplaceAll(resourceType, "_", " ")
+
+	singularResource := resourceTypeParsed[:len(resourceTypeParsed)-1]
+	singularCamelCaseResource := strings.ToUpper(string(resourceTypeParsed[:1])) + string(resourceTypeParsed[1:len(resourceTypeParsed)-1])
 	switch action {
 	case string(auditmodels.ActionCreate):
-		if resourceName == "" {
-			message = fmt.Sprintf("Created a new %s", singularResource)
-		} else {
-			message = fmt.Sprintf("%s %s was created", singularCamelCaseResource, resourceName)
+		switch resourceType {
+		case string(auditmodels.DatabaseAssignments):
+			message = fmt.Sprintf("Database %s was linked", resourceName)
+		default:
+			if resourceName == "" {
+				message = fmt.Sprintf("Created a new %s", singularResource)
+			} else {
+				message = fmt.Sprintf("%s %s was created", singularCamelCaseResource, resourceName)
+			}
 		}
 	case string(auditmodels.ActionUpdate):
-		if resourceName == "" {
-			message = fmt.Sprintf("Updated a %s", singularResource)
-		} else {
-			message = fmt.Sprintf("%s %s was updated", singularCamelCaseResource, resourceName)
+		switch resourceType {
+		case string(auditmodels.Envs):
+			message = fmt.Sprintf("Environment Variable %s was set", resourceName)
+		case string(auditmodels.Deployments):
+			message = fmt.Sprintf("Deployed project %s", resourceName)
+		case string(auditmodels.CodeUpdates):
+			message = fmt.Sprintf("Code updated for project %s", resourceName)
+		default:
+			if resourceName == "" {
+				message = fmt.Sprintf("Updated %s", singularResource)
+			} else {
+				message = fmt.Sprintf("%s %s was updated", singularCamelCaseResource, resourceName)
+			}
 		}
 	case string(auditmodels.ActionDelete):
-		if resourceName == "" {
-			message = fmt.Sprintf("Deleted a %s", singularResource)
-		} else {
-			message = fmt.Sprintf("%s %s was deleted", singularCamelCaseResource, resourceName)
+		switch resourceType {
+		case string(auditmodels.Envs):
+			message = fmt.Sprintf("Environment Variable %s was deleted", resourceName)
+		default:
+			if resourceName == "" {
+				message = fmt.Sprintf("Deleted %s", singularResource)
+			} else {
+				message = fmt.Sprintf("%s %s was deleted", singularCamelCaseResource, resourceName)
+			}
 		}
 	case string(auditmodels.ActionDisable):
-		if resourceName == "" {
-			message = fmt.Sprintf("Disabled a %s", singularResource)
-		} else {
-			message = fmt.Sprintf("%s %s was disabled", singularCamelCaseResource, resourceName)
+		switch resourceType {
+		default:
+			if resourceName == "" {
+				message = fmt.Sprintf("Disabled %s", singularResource)
+			} else {
+				message = fmt.Sprintf("%s %s was disabled", singularCamelCaseResource, resourceName)
+			}
 		}
 	case string(auditmodels.ActionEnable):
-		if resourceName == "" {
-			message = fmt.Sprintf("Enabled a %s", singularResource)
-		} else {
-			message = fmt.Sprintf("%s %s was enabled", singularCamelCaseResource, resourceName)
+		switch resourceType {
+		default:
+			if resourceName == "" {
+				message = fmt.Sprintf("Enabled %s", singularResource)
+			} else {
+				message = fmt.Sprintf("%s %s was enabled", singularCamelCaseResource, resourceName)
+			}
 		}
 	case string(auditmodels.ActionLogin):
 		return "User logged in"
