@@ -48,6 +48,8 @@ func AuditLogToString(resourceType, resourceName, action string) string {
 		switch resourceType {
 		case string(auditmodels.DatabaseAssignments):
 			message = fmt.Sprintf("Database %s was linked", resourceName)
+		case string(auditmodels.Collaborators):
+			message = fmt.Sprintf("Collaborator %s was invited to the project", resourceName)
 		default:
 			if resourceName == "" {
 				message = fmt.Sprintf("Created a new %s", singularResource)
