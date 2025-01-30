@@ -46,6 +46,8 @@ func AuditLogToString(resourceType, resourceName, action string) string {
 	switch action {
 	case string(auditmodels.ActionCreate):
 		switch resourceType {
+		case string(auditmodels.Envs):
+			message = fmt.Sprintf("Environment Variable %s was created", resourceName)
 		case string(auditmodels.DatabaseAssignments):
 			message = fmt.Sprintf("Database %s was linked", resourceName)
 		case string(auditmodels.Collaborators):
@@ -60,7 +62,7 @@ func AuditLogToString(resourceType, resourceName, action string) string {
 	case string(auditmodels.ActionUpdate):
 		switch resourceType {
 		case string(auditmodels.Envs):
-			message = fmt.Sprintf("Environment Variable %s was set", resourceName)
+			message = fmt.Sprintf("Environment Variable %s was modified", resourceName)
 		case string(auditmodels.Deployments):
 			message = fmt.Sprintf("Deployed project %s", resourceName)
 		case string(auditmodels.CodeUpdates):
