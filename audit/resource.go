@@ -86,19 +86,27 @@ func AuditLogToString(resourceType, resourceName, action string) string {
 	case string(auditmodels.ActionDisable):
 		switch resourceType {
 		default:
+			messagePrefix := "Function"
+			if resourceTypeParsed == "Class pause" {
+				messagePrefix = "Class"
+			}
 			if resourceName == "" {
 				message = fmt.Sprintf("Disabled %s", singularResource)
 			} else {
-				message = fmt.Sprintf("%s %s was disabled", singularCamelCaseResource, resourceName)
+				message = fmt.Sprintf("%s \"%s\" was disabled", messagePrefix, resourceName)
 			}
 		}
 	case string(auditmodels.ActionEnable):
 		switch resourceType {
 		default:
+			messagePrefix := "Function"
+			if resourceTypeParsed == "Class pause" {
+				messagePrefix = "Class"
+			}
 			if resourceName == "" {
 				message = fmt.Sprintf("Enabled %s", singularResource)
 			} else {
-				message = fmt.Sprintf("%s %s was enabled", singularCamelCaseResource, resourceName)
+				message = fmt.Sprintf("%s \"%s\" was enabled", messagePrefix, resourceName)
 			}
 		}
 	case string(auditmodels.ActionLogin):
