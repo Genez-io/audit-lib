@@ -42,6 +42,8 @@ const (
 	AuthenticationMail    ProjectLevelResource = "authentication_mails"
 	EmailService          ProjectLevelResource = "email_services"
 	LogDrains             ProjectLevelResource = "log_drains"
+	Frontends             ProjectLevelResource = "frontends"
+	Branches              ProjectLevelResource = "branches"
 )
 
 func (ProjectLevelResource) Check(s string) error {
@@ -60,7 +62,9 @@ func (ProjectLevelResource) Check(s string) error {
 		"authentication_methods",
 		"authentication_mails",
 		"email_service",
-		"log_drains":
+		"log_drains",
+		"branches",
+		"frontends":
 		return nil
 	default:
 		return fmt.Errorf("invalid ProjectLevelResource: %s", s)
