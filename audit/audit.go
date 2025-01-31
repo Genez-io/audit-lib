@@ -41,32 +41,19 @@ func GetAuditService() *auditService {
 	return auditServiceInstance
 }
 
-func (s *auditService) PutAuditLogProjectLevel(resource auditmodels.ProjectLevelResource, resourceId, resourceName string, action auditmodels.Action, userId, projectId string) (uuid.UUID, error) {
-	auditLog, err := s.repo.CreateAuditLogProjectLevel(string(resource), resourceId, resourceName, string(action), userId, projectId)
+func (s *auditService) PutAuditLogProjectLevel(resource auditmodels.ProjectLevelResource, resourceId, resourceName string, action auditmodels.Action, userId, projectId string, details []string) (uuid.UUID, error) {
+	auditLog, err := s.repo.CreateAuditLogProjectLevel(string(resource), resourceId, resourceName, string(action), userId, projectId, details)
 	if err != nil {
 		return uuid.UUID{}, err
 	}
-
-	fmt.Println(auditLog)
-	return auditLog.ID, nil
-}
-func (s *auditService) PutAuditLogAccountLevel(resourceType auditmodels.AccountLevelResource, resourceId, resourceName string, action auditmodels.Action, userId string, orgId *string) (uuid.UUID, error) {
-	auditLog, err := s.repo.CreateAuditLogAccountLevel(string(resourceType), resourceId, resourceName, string(action), userId, orgId)
-	if err != nil {
-		return uuid.UUID{}, err
-	}
-
-	fmt.Println(auditLog)
 	return auditLog.ID, nil
 }
 
-func (s *auditService) PutAuditDetail(parentId uuid.UUID, message string) (uuid.UUID, error) {
-	auditLogDetail, err := s.repo.CreateAuditLogDetail(parentId, message)
+func (s *auditService) PutAuditLogAccountLevel(resourceType auditmodels.AccountLevelResource, resourceId, resourceName string, action auditmodels.Action, userId string, orgId *string, details []string) (uuid.UUID, error) {
+	auditLog, err := s.repo.CreateAuditLogAccountLevel(string(resourceType), resourceId, resourceName, string(action), userId, orgId, details)
 	if err != nil {
 		return uuid.UUID{}, err
 	}
 
-	fmt.Println(auditLogDetail)
-	return auditLogDetail.ID, nil
-
+	return auditLog.ID, nil
 }

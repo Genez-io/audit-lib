@@ -1,14 +1,21 @@
 package repository
 
 import (
+	"context"
+	"sync"
 	"time"
 
 	"github.com/google/uuid"
+	"golang.org/x/time/rate"
 	"gorm.io/gorm"
 )
 
 type AuditRepository struct {
-	DB *gorm.DB
+	db            *gorm.DB
+	auditLogQueue []AuditLog
+	queueLock     sync.Mutex
+	rateLimiter   *rate.Limiter
+	context       context.Context
 }
 
 type AuditLevel string
@@ -38,6 +45,8 @@ type AuditLog struct {
 
 	// If the resource is project level, this will be the project's ID.
 	ProjectID string `gorm:"index"`
+
+	Details []AuditLogDetail
 }
 
 type AuditLogDetail struct {
@@ -48,9 +57,32 @@ type AuditLogDetail struct {
 	Message    string
 }
 
+const batchSize = 50
+const flushInterval = 5 * time.Second
+
 func NewAuditRepository(db *gorm.DB) *AuditRepository {
-	db.AutoMigrate(&AuditLog{}, &AuditLogDetail{})
-	return &AuditRepository{DB: db}
+	tickerFlush := time.NewTicker(flushInterval)
+	done := make(chan bool)
+
+	auditRepository := &AuditRepository{
+		db:            db,
+		auditLogQueue: make([]AuditLog, 0),
+		queueLock:     sync.Mutex{},
+	}
+
+	go func() {
+		for {
+			select {
+			case <-done:
+				return
+			case <-tickerFlush.C:
+				if len(auditRepository.auditLogQueue) > 0 {
+					auditRepository.FlushAuditLogQueue()
+				}
+			}
+		}
+	}()
+	return auditRepository
 }
 
 func (r *AuditRepository) CreateAuditLogProjectLevel(
@@ -60,6 +92,7 @@ func (r *AuditRepository) CreateAuditLogProjectLevel(
 	action string,
 	userId string,
 	projectId string,
+	details []string,
 ) (AuditLog, error) {
 	auditLog := AuditLog{
 		ID:           uuid.New(),
@@ -72,8 +105,14 @@ func (r *AuditRepository) CreateAuditLogProjectLevel(
 		Level:        AuditLevelProject,
 	}
 
-	res := r.DB.Create(&auditLog)
-	return auditLog, res.Error
+	for _, detail := range details {
+		auditLog.Details = append(auditLog.Details, AuditLogDetail{
+			ID:      uuid.New(),
+			Message: detail,
+		})
+	}
+	r.PushToAuditQueue(auditLog)
+	return auditLog, nil
 }
 
 func (r *AuditRepository) CreateAuditLogAccountLevel(
@@ -83,6 +122,7 @@ func (r *AuditRepository) CreateAuditLogAccountLevel(
 	action string,
 	userId string,
 	ownerId *string,
+	details []string,
 ) (AuditLog, error) {
 	auditLog := AuditLog{
 		ID:           uuid.New(),
@@ -98,21 +138,35 @@ func (r *AuditRepository) CreateAuditLogAccountLevel(
 		auditLog.OwnerID = *ownerId
 	}
 
-	res := r.DB.Create(&auditLog)
-
-	return auditLog, res.Error
-}
-
-func (r *AuditRepository) CreateAuditLogDetail(
-	parentId uuid.UUID,
-	message string,
-) (AuditLogDetail, error) {
-	auditLogDetail := AuditLogDetail{
-		ID:         uuid.New(),
-		AuditLogID: parentId,
-		Message:    message,
+	for _, detail := range details {
+		auditLog.Details = append(auditLog.Details, AuditLogDetail{
+			ID:      uuid.New(),
+			Message: detail,
+		})
 	}
 
-	err := r.DB.Create(&auditLogDetail).Error
-	return auditLogDetail, err
+	r.PushToAuditQueue(auditLog)
+	return auditLog, nil
+}
+
+func (r *AuditRepository) PushToAuditQueue(auditLog AuditLog) {
+	r.queueLock.Lock()
+	r.auditLogQueue = append(r.auditLogQueue, auditLog)
+	r.queueLock.Unlock()
+}
+
+func (r *AuditRepository) FlushAuditLogQueue() error {
+	// Create a deep copy of the previous queue.
+	r.queueLock.Lock()
+	var oldQueue []AuditLog = make([]AuditLog, 0)
+	for _, log := range r.auditLogQueue {
+		var copyLog AuditLog = log
+		copy(copyLog.Details, log.Details)
+		oldQueue = append(oldQueue, copyLog)
+	}
+	r.auditLogQueue = make([]AuditLog, 0)
+	r.queueLock.Unlock()
+
+	res := r.db.CreateInBatches(&oldQueue, batchSize)
+	return res.Error
 }
