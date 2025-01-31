@@ -48,6 +48,8 @@ func AuditLogToString(resourceType, resourceName, action string) string {
 	switch action {
 	case string(auditmodels.ActionCreate):
 		switch resourceType {
+		case string(auditmodels.Branches):
+			message = fmt.Sprintf("Branch %s was created", resourceName)
 		case string(auditmodels.Envs):
 			message = fmt.Sprintf("Environment Variable %s was created", resourceName)
 		case string(auditmodels.DatabaseAssignments):
@@ -80,6 +82,8 @@ func AuditLogToString(resourceType, resourceName, action string) string {
 		switch resourceType {
 		case string(auditmodels.Envs):
 			message = fmt.Sprintf("Environment Variable %s was deleted", resourceName)
+		case string(auditmodels.Branches):
+			message = fmt.Sprintf("Branch %s was deleted", resourceName)
 		default:
 			if resourceName == "" {
 				message = fmt.Sprintf("Deleted %s", singularResource)
