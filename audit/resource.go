@@ -17,6 +17,7 @@ type BaseProjectLevelAudit struct {
 	// Note this should be populated when calling SubmitAuditLog.
 	parentAuditLogId string
 	actionTaken      auditmodels.Action
+	details          []string
 }
 
 type BaseAccountLevelAudit struct {
@@ -28,6 +29,7 @@ type BaseAccountLevelAudit struct {
 	// Note this should be populated when calling SubmitAuditLog.
 	parentAuditLogId string
 	actionTaken      auditmodels.Action
+	details          []string
 }
 
 type ResourceAudit interface {

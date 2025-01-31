@@ -74,15 +74,8 @@ func (p *AccountLevelAudit) SubmitAuditDetail(message string) error {
 		return nil
 	}
 
-	if p.parentAuditLogId == "" {
-		return fmt.Errorf("parentAuditLogId is not set")
-	}
-	parsedParentId, err := uuid.Parse(p.parentAuditLogId)
-	if err != nil {
-		return err
-	}
-	_, err = GetAuditService().PutAuditDetail(parsedParentId, message)
-	return err
+	p.details = append(p.details, message)
+	return nil
 }
 
 // SubmitAuditLog implements ResourceAudit.
@@ -98,7 +91,7 @@ func (p *AccountLevelAudit) SubmitAuditLog(action auditmodels.Action) error {
 	var logId uuid.UUID
 	var err error
 
-	logId, err = p.auditService.PutAuditLogAccountLevel(p.resourceType, p.resourceId, p.metadata.Name, action, p.userId, p.ownerId)
+	logId, err = p.auditService.PutAuditLogAccountLevel(p.resourceType, p.resourceId, p.metadata.Name, action, p.userId, p.ownerId, p.details)
 	if err != nil {
 		return err
 	}

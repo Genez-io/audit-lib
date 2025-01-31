@@ -73,15 +73,8 @@ func (p *ProjectLevelAudit) SubmitAuditDetail(message string) error {
 		fmt.Println("auditService is nil, silent fail")
 		return nil
 	}
-	if p.parentAuditLogId == "" {
-		return fmt.Errorf("parentAuditLogId is not set")
-	}
-	parsedParentId, err := uuid.Parse(p.parentAuditLogId)
-	if err != nil {
-		return err
-	}
-	_, err = GetAuditService().PutAuditDetail(parsedParentId, message)
-	return err
+	p.details = append(p.details, message)
+	return nil
 }
 
 // SubmitAuditLog implements ResourceAudit.
@@ -96,7 +89,7 @@ func (p *ProjectLevelAudit) SubmitAuditLog(action auditmodels.Action) error {
 	var logId uuid.UUID
 	var err error
 	// Check that the action is valid.
-	logId, err = p.auditService.PutAuditLogProjectLevel(p.resourceType, p.resourceId, p.metadata.Name, action, p.userId, p.projectId)
+	logId, err = p.auditService.PutAuditLogProjectLevel(p.resourceType, p.resourceId, p.metadata.Name, action, p.userId, p.projectId, p.details)
 	if err != nil {
 		return err
 	}
