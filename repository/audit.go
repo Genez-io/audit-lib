@@ -57,9 +57,11 @@ type AuditLogDetail struct {
 	Message    string
 }
 
+const batchSize = 50
+const flushInterval = 5 * time.Second
+
 func NewAuditRepository(db *gorm.DB) *AuditRepository {
-	var duration time.Duration = 5 * time.Second
-	tickerFlush := time.NewTicker(duration)
+	tickerFlush := time.NewTicker(flushInterval)
 	done := make(chan bool)
 
 	auditRepository := &AuditRepository{
@@ -165,7 +167,6 @@ func (r *AuditRepository) FlushAuditLogQueue() error {
 	r.auditLogQueue = make([]AuditLog, 0)
 	r.queueLock.Unlock()
 
-	batchSize := 50
 	res := r.db.CreateInBatches(&oldQueue, batchSize)
 	return res.Error
 }
