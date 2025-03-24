@@ -32,6 +32,12 @@ func (p *AccountLevelAudit) ToString() string {
 		} else {
 			message = fmt.Sprintf("%s %s was created", singularCamelCaseResource, p.metadata.Name)
 		}
+	case auditmodels.ActionRead:
+		if p.metadata.Name == "" {
+			message = fmt.Sprintf("Read a %s", singularResource)
+		} else {
+			message = fmt.Sprintf("%s %s was read", singularCamelCaseResource, p.metadata.Name)
+		}
 	case auditmodels.ActionUpdate:
 		if p.metadata.Name == "" {
 			message = fmt.Sprintf("Updated a %s", singularResource)

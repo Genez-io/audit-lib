@@ -61,6 +61,17 @@ func AuditLogToString(resourceType, resourceName, action string) string {
 				message = fmt.Sprintf("%s %s was created", singularCamelCaseResource, resourceName)
 			}
 		}
+	case string(auditmodels.ActionRead):
+		switch resourceType {
+		case string(auditmodels.Envs):
+			message = fmt.Sprintf("Environment Variable %s was read", resourceName)
+		default:
+			if resourceName == "" {
+				message = fmt.Sprintf("Read %s", singularResource)
+			} else {
+				message = fmt.Sprintf("%s %s was read", singularCamelCaseResource, resourceName)
+			}
+		}
 	case string(auditmodels.ActionUpdate):
 		switch resourceType {
 		case string(auditmodels.Envs):
