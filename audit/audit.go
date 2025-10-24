@@ -57,3 +57,7 @@ func (s *auditService) PutAuditLogAccountLevel(resourceType auditmodels.AccountL
 
 	return auditLog.ID, nil
 }
+
+func (s *auditService) ChangeAuditOwner(projectId string, currentOwnerId string, newOwnerId string) error {
+	return s.repo.ChangeAuditOwnerProjectLevel(projectId, currentOwnerId, newOwnerId)
+}
