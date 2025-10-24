@@ -111,6 +111,12 @@ func (p *AccountLevelAudit) SubmitAuditLog(action auditmodels.Action) error {
 	return nil
 }
 
+// ChangeAuditOwner is not applicable for account level audits.
+func (p *AccountLevelAudit) ChangeAuditOwner(projectId string, currentOwnerId string, newOwnerId string) error {
+	// No-op for account level audits.
+	return nil
+}
+
 func NewAccountLevelAudit(resType auditmodels.AccountLevelResource, userId, resourceId, resourceName string, ownerId *string) ResourceAudit {
 	return &AccountLevelAudit{
 		BaseAccountLevelAudit: BaseAccountLevelAudit{

@@ -109,6 +109,20 @@ func (p *ProjectLevelAudit) SubmitAuditLog(action auditmodels.Action) error {
 	return err
 }
 
+func (p *ProjectLevelAudit) ChangeAuditOwner(projectId string, currentOwnerId string, newOwnerId string) error {
+	if p.auditService == nil {
+		fmt.Println("auditService is nil, silent fail")
+		return nil
+	}
+	err := p.auditService.ChangeAuditOwner(projectId, currentOwnerId, newOwnerId)
+	if err != nil {
+		fmt.Println("Error changing audit owner:", err)
+		return err
+	}
+
+	return nil
+}
+
 func NewProjectLevelAudit(resType auditmodels.ProjectLevelResource, userId, projectId, resourceId, resourceName string, ownerId *string) ResourceAudit {
 	return &ProjectLevelAudit{
 		BaseProjectLevelAudit: BaseProjectLevelAudit{

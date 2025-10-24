@@ -35,6 +35,7 @@ type BaseAccountLevelAudit struct {
 type ResourceAudit interface {
 	SubmitAuditLog(action auditmodels.Action) error
 	SubmitAuditDetail(message string) error
+	ChangeAuditOwner(projectId string, currentOwnerId string, newOwnerId string) error
 	ToString() string
 }
 

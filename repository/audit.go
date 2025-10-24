@@ -170,3 +170,11 @@ func (r *AuditRepository) FlushAuditLogQueue() error {
 	res := r.db.CreateInBatches(&oldQueue, batchSize)
 	return res.Error
 }
+
+func (r *AuditRepository) ChangeAuditOwnerProjectLevel(projectId string, currentOwnerId string, newOwnerId string) error {
+	// Update all audit logs with the current owner id to the new owner id for the given project.
+	res := r.db.Model(&AuditLog{}).
+		Where("project_id = ? AND user_id = ?", projectId, currentOwnerId).
+		Update("user_id", newOwnerId)
+	return res.Error
+}
